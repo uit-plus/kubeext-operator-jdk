@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kubesys-config
+  namespace: kube-system
+data:
+  VM.properties: |
+    GROUP=cloudplus.io
+    VERSION=v1alpha3
+    PLURAL=virtualmachines
+    KIND=VirtualMachine
+    CLASS=com.github.kubesys.kubernetes.api.model.VirtualMachineWatcher
+  Disk.properties: |
+    GROUP=cloudplus.io
+    VERSION=v1alpha3
+    PLURAL=virtualmachinedisks
+    KIND=VirtualMachineDisk
+    CLASS=com.github.kubesys.kubernetes.api.model.VirtualMachineDiskWatcher
