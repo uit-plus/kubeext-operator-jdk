@@ -37,7 +37,8 @@ public class EtcdConnectionTest {
 		KubernetesClient client = getClient();
 		Collection<URI> urls = new ArrayList<URI>();
 		for (Pod pod : client.pods().inNamespace("kube-system")
-				.withLabel("component", "etcd").list().getItems()) {
+				.withLabel("app", "etcd").list().getItems()) {
+			System.out.println(pod.getStatus().getPodIP());
 			urls.add(new URI("http://" + pod.getStatus().getPodIP() + ":32379"));
 		}
 		Client etcdcli = Client.builder().endpoints(urls).build();

@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import com.github.kubesys.ha.DistributedLock;
 import com.github.kubesys.ha.DistributedLock.LockResult;
 
+import io.etcd.jetcd.Client;
 import io.fabric8.kubernetes.api.model.Doneable;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.KubernetesResourceList;
@@ -29,13 +30,19 @@ public abstract class AbstractWatcher<T> implements Watcher<T> {
 
 	protected final static String LOCK = "/kubesys/kubectlsdk/ha";
 	
-	public AbstractWatcher() {
+	protected final Client client;
+	
+	protected final String name;
+
+	public AbstractWatcher(Client client, String name) {
 		super();
+		this.client = client;
+		this.name = name;
 	}
 
 	public void eventReceived(Action action, T resource) {
 
-		LockResult lockResult = DistributedLock.getInstance().lock(LOCK, 30);
+		LockResult lockResult = DistributedLock.getInstance(client, name).lock(LOCK, 30);
 		
 		 if (lockResult.getIsLockSuccess()) {
 			 if (action == Watcher.Action.ADDED) {
@@ -52,8 +59,7 @@ public abstract class AbstractWatcher<T> implements Watcher<T> {
 				}
 		 }
 		 
-		 DistributedLock.getInstance().unLock(LOCK, lockResult);
-		
+		 DistributedLock.getInstance(client, name).unLock(LOCK, lockResult);
 	}
 
 	public void onClose(KubernetesClientException cause) {

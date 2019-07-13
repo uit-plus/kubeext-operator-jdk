@@ -7,6 +7,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import io.etcd.jetcd.ByteSequence;
 import io.etcd.jetcd.Client;
@@ -17,29 +19,37 @@ import io.etcd.jetcd.Lock;
  * @author wuheng@otcaix.iscas.ac.cn
  * @since Wed July 12 17:26:22 CST 2019
  * 
+ * This code is from internet
  **/
 public class DistributedLock {
-	private static DistributedLock lockProvider = null;
-	private static Object mutex = new Object();
-	private Client client;
-	private Lock lockClient;
-	private Lease leaseClient;
+	
+	protected static Logger m_logger = Logger.getLogger(DistributedLock.class.getName()); 
+	
+	protected static DistributedLock m_lockInstance = null;
+	
+	protected static Object m_mutex = new Object();
+	
+	protected Lock lockClient;
+	
+	protected Lease leaseClient;
+	
+	protected String hostName;
 
-	private DistributedLock() {
+	private DistributedLock(Client client, String hostName) {
 		super();
 		// 创建Etcd客户端，本例中Etcd集群只有一个节点
-		this.client = Client.builder().endpoints("http://localhost:2379").build();
 		this.lockClient = client.getLockClient();
 		this.leaseClient = client.getLeaseClient();
+		this.hostName = hostName;
 	}
 
-	public static DistributedLock getInstance() {
-		synchronized (mutex) {
-			if (null == lockProvider) {
-				lockProvider = new DistributedLock();
+	public static DistributedLock getInstance(Client client, String hostName) {
+		synchronized (m_mutex) {
+			if (null == m_lockInstance) {
+				m_lockInstance = new DistributedLock(client, hostName);
 			}
 		}
-		return lockProvider;
+		return m_lockInstance;
 	}
 
 	/**
@@ -73,21 +83,21 @@ public class DistributedLock {
 			long period = TTL - TTL / 5;
 			service.scheduleAtFixedRate(new KeepAliveTask(leaseClient, leaseId), period, period, TimeUnit.SECONDS);
 		} catch (InterruptedException | ExecutionException e) {
-			System.out.println("[error]: Create lease failed:" + e);
+			m_logger.log(Level.SEVERE, "[error]: Create lease failed:" + e);
 			return lockResult;
 		}
 
-		System.out.println("[lock]: start to lock." + Thread.currentThread().getName());
+		m_logger.log(Level.INFO, "[lock]: start to lock." + hostName);
 
 		/* 3.加锁操作 */
 		// 执行加锁操作，并为锁对应的key绑定租约
 		try {
 			lockClient.lock(ByteSequence.from(lockName.getBytes()), leaseId).get();
 		} catch (InterruptedException | ExecutionException e1) {
-			System.out.println("[error]: lock failed:" + e1);
+			m_logger.log(Level.SEVERE, "[error]: Create lease failed:" + e1);
 			return lockResult;
 		}
-		System.out.println("[lock]: lock successfully." + Thread.currentThread().getName());
+		m_logger.log(Level.INFO, "[lock]: lock successfully." + hostName);
 
 		lockResult.setIsLockSuccess(true);
 
@@ -101,7 +111,7 @@ public class DistributedLock {
 	 * @param lockResult:加锁操作返回的结果
 	 */
 	public void unLock(String lockName, LockResult lockResult) {
-		System.out.println("[unlock]: start to unlock." + Thread.currentThread().getName());
+		m_logger.log(Level.INFO, "[unlock]: start to unlock." + hostName);
 		try {
 			// 释放锁
 			lockClient.unlock(ByteSequence.from(lockName.getBytes())).get();
@@ -112,10 +122,10 @@ public class DistributedLock {
 				leaseClient.revoke(lockResult.getLeaseId());
 			}
 		} catch (InterruptedException | ExecutionException e) {
-			System.out.println("[error]: unlock failed: " + e);
+			m_logger.log(Level.SEVERE, "[error]: unlock failed: " + e);
 		}
 
-		System.out.println("[unlock]: unlock successfully." + Thread.currentThread().getName());
+		m_logger.log(Level.INFO, "[unlock]: unlock successfully." + hostName);
 	}
 
 	/**

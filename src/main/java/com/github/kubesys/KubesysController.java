@@ -8,8 +8,9 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.github.kubesys.utils.ClientUtils;
+
 import io.fabric8.kubernetes.api.model.KubernetesResource;
-import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinition;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.MixedOperation;
@@ -36,33 +37,37 @@ public class KubesysController {
 	 * configuration name
 	 */
 	protected final String CONFIGNAME = "kubesys-config";
+
+	/**
+	 * token
+	 */
+	public final static String TOKEN   = "/etc/kubernetes/admin.conf";
 	
 	/**
 	 * Kubernetes client
 	 */
 	protected final KubernetesClient client;
+
+	/**
+	 * init client
+	 * @throws Exception 
+	 */
+	public KubesysController() throws Exception {
+		this.client = ClientUtils.getKubeClient(TOKEN);
+	}
 	
 	/**
 	 * @param client
 	 */
 	public KubesysController(KubernetesClient client) {
-		super();
 		this.client = client;
-		for (Pod pod : client.pods()
-					.inNamespace("kube-system")
-					.withLabel("component", "etcd")
-					.list().getItems()) {
-			System.out.println(pod.getStatus().getPodIP());
-		}
-		
 	}
 
 	/**
 	 * Start controller
 	 * 
-	 * @param client kubernetes client
 	 */
-	protected void start(KubernetesClient client) {
+	protected void start() {
 		try {
 			Map<String, String> data = client.configMaps()
 				.inNamespace(NAMESPACE).withName(CONFIGNAME).get().getData();
