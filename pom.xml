@@ -4,11 +4,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.github.kubesys</groupId>
-	<artifactId>joperator-sdk</artifactId>
-	<version>0.1</version>
+	<artifactId>operator-jdk</artifactId>
+	<version>0.2</version>
 	<packaging>jar</packaging>
 
-	<name>joperator-sdk</name>
+	<name>operator-jdk</name>
 	<url>http://maven.apache.org</url>
 
 	<properties>
