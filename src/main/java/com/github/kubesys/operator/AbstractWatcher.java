@@ -1,13 +1,13 @@
 /**
  * Copyright (2019, ) Institute of Software, Chinese Academy of Sciences
  */
-package com.github.kubesys;
+package com.github.kubesys.operator;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.github.kubesys.ha.DistributedLock;
-import com.github.kubesys.ha.DistributedLock.LockResult;
+import com.github.kubesys.operator.ha.DistributedLock;
+import com.github.kubesys.operator.ha.DistributedLock.LockResult;
 
 import io.etcd.jetcd.Client;
 import io.fabric8.kubernetes.api.model.Doneable;
@@ -28,23 +28,20 @@ public abstract class AbstractWatcher<T> implements Watcher<T> {
 	 */
 	protected final static Logger m_logger = Logger.getLogger(AbstractWatcher.class.getName());
 
-	protected final static String LOCK = "/kubesys/kubectlsdk/ha";
+	protected final static String LOCK = "/kubesys/extfrk/ha";
 	
 	protected final Client client;
 	
-	protected final String name;
-
-	public AbstractWatcher(Client client, String name) {
+	public AbstractWatcher(Client client) {
 		super();
 		this.client = client;
-		this.name = name;
 	}
 
 	public void eventReceived(Action action, T resource) {
 
-		LockResult lockResult = DistributedLock.getInstance(client, name).lock(LOCK, 30);
+		LockResult lockResult = DistributedLock.getInstance(client).lock(LOCK, 30);
 		
-		 if (lockResult.getIsLockSuccess()) {
+		 if (lockResult.isSuccess()) {
 			 if (action == Watcher.Action.ADDED) {
 					m_logger.log(Level.INFO, "Create: " + resource);
 					createResource(resource);
@@ -59,7 +56,7 @@ public abstract class AbstractWatcher<T> implements Watcher<T> {
 				}
 		 }
 		 
-		 DistributedLock.getInstance(client, name).unLock(LOCK, lockResult);
+		 DistributedLock.getInstance(client).unLock(LOCK, lockResult);
 	}
 
 	public void onClose(KubernetesClientException cause) {

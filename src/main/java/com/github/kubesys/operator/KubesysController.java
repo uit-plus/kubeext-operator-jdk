@@ -1,14 +1,15 @@
 /**
  * Copyright (2019, ) Institute of Software, Chinese Academy of Sciences
  */
-package com.github.kubesys;
+package com.github.kubesys.operator;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.github.kubesys.utils.ClientUtils;
+import com.github.kubesys.operator.utils.ClientUtils;
 
 import io.fabric8.kubernetes.api.model.KubernetesResource;
 import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinition;
@@ -53,7 +54,7 @@ public class KubesysController {
 	 * @throws Exception 
 	 */
 	public KubesysController() throws Exception {
-		this.client = ClientUtils.getKubeClient(TOKEN);
+		this.client = ClientUtils.getKubeClient(new File(TOKEN));
 	}
 	
 	/**

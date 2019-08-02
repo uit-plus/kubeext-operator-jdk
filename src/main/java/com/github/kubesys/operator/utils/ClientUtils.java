@@ -1,7 +1,7 @@
 /**
  * Copyright (2019, ) Institute of Software, Chinese Academy of Sciences
  */
-package com.github.kubesys.utils;
+package com.github.kubesys.operator.utils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,7 +14,7 @@ import java.util.Map;
 
 import org.yaml.snakeyaml.Yaml;
 
-import com.github.kubesys.KubesysController;
+import com.github.kubesys.operator.KubesysController;
 
 import io.etcd.jetcd.Client;
 import io.fabric8.kubernetes.api.model.Pod;
@@ -30,17 +30,24 @@ import io.fabric8.kubernetes.client.KubernetesClient;
  **/
 public class ClientUtils {
 
-	public static KubernetesClient getKubeClient(String token) throws Exception {
-		Map<String, Object> map = new Yaml().load(
-				new FileInputStream(new File(token)));
+	/**
+	 * @param token         default file is /etc/kubernetes/admin.conf
+	 * @return              kubernetes client
+	 * @throws Exception    exception
+	 */
+	public static KubernetesClient getKubeClient(File token) throws Exception {
+		Map<String, Object> map = new Yaml().load(new FileInputStream(token));
+		
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		Map<String, Map<String, Object>> clusdata = 
 				(Map<String, Map<String, Object>>)
 				((List) map.get("clusters")).get(0);
+		
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		Map<String, Map<String, Object>> userdata = 
 				(Map<String, Map<String, Object>>)
 				((List) map.get("users")).get(0);
+		
 		Config config = new ConfigBuilder()
 				.withApiVersion("v1")
 				.withCaCertData((String) clusdata.get("cluster").get("certificate-authority-data"))
@@ -48,21 +55,8 @@ public class ClientUtils {
 				.withClientKeyData((String) userdata.get("user").get("client-key-data"))
 				.withMasterUrl((String) clusdata.get("cluster").get("server"))
 				.build();
+		
 		return new DefaultKubernetesClient(config);
 	}
 	
-	public static Client getEtcdClient() throws Exception {
-		KubernetesClient client = getKubeClient(KubesysController.TOKEN);
-		Collection<URI> urls = new ArrayList<URI>();
-		for (Pod pod : client.pods().inNamespace("kube-system")
-				.withLabel("app", "etcd").list().getItems()) {
-			System.out.println(pod.getStatus().getPodIP());
-			urls.add(new URI("http://" + pod.getStatus().getPodIP() + ":2379"));
-		}
-		return Client.builder().endpoints(urls).build();
-	}
-	
-	public static String getHostName() throws Exception {
-		return InetAddress.getLocalHost().getHostName();
-	}
 }
