@@ -5,23 +5,20 @@ package com.github.kubesys.operator.utils;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.net.InetAddress;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import org.yaml.snakeyaml.Yaml;
 
-import com.github.kubesys.operator.KubesysController;
-
 import io.etcd.jetcd.Client;
-import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import io.grpc.netty.GrpcSslContexts;
+import io.netty.handler.ssl.SslContext;
 
 /**
  * @author wuheng@otcaix.iscas.ac.cn
@@ -31,7 +28,7 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 public class ClientUtils {
 
 	/**
-	 * @param token         default file is /etc/kubernetes/admin.conf
+	 * @param token         default value is /etc/kubernetes/admin.conf
 	 * @return              kubernetes client
 	 * @throws Exception    exception
 	 */
@@ -59,4 +56,25 @@ public class ClientUtils {
 		return new DefaultKubernetesClient(config);
 	}
 	
+	/**
+	 * just work on linux
+	 * 
+	 * @param urls                    urls 
+	 * @param trustCertCollectionFile default value is /etc/kubernetes/pki/etcd/ca.crt
+	 * @param keyCertChainFile        default value is /etc/kubernetes/pki/etcd/server.crt
+	 * @param keyFile                 default value is /etc/kubernetes/pki/etcd/server.key
+	 * @return                        etcdClient object
+	 * @throws Exception              exception
+	 */
+	public static Client getEtcdClient(Collection<URI> urls,
+			File trustCertCollectionFile, File keyCertChainFile, 
+								File keyFile) throws Exception {
+		
+		SslContext sslContext = GrpcSslContexts.forClient()
+				.trustManager(trustCertCollectionFile)
+				.keyManager(keyCertChainFile, keyFile).build();
+		
+		return Client.builder().sslContext(sslContext)
+				.endpoints(urls).build();
+	}
 }

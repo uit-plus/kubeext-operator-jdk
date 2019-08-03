@@ -18,7 +18,7 @@ import io.fabric8.kubernetes.client.Watcher;
 
 /**
  * @author wuheng@otcaix.iscas.ac.cn
- * @since Wed July 11 17:26:22 CST 2019
+ * @since Wed July 28 17:26:22 CST 2019
  * 
  **/
 public abstract class AbstractWatcher<T> implements Watcher<T> {
@@ -28,8 +28,9 @@ public abstract class AbstractWatcher<T> implements Watcher<T> {
 	 */
 	protected final static Logger m_logger = Logger.getLogger(AbstractWatcher.class.getName());
 
-	protected final static String LOCK = "/kubesys/extfrk/ha";
-	
+	/**
+	 * client
+	 */
 	protected final Client client;
 	
 	public AbstractWatcher(Client client) {
@@ -39,7 +40,7 @@ public abstract class AbstractWatcher<T> implements Watcher<T> {
 
 	public void eventReceived(Action action, T resource) {
 
-		LockResult lockResult = DistributedLock.getInstance(client).lock(LOCK, 30);
+		LockResult lockResult = DistributedLock.getInstance(client).lock(getLockName(), 30);
 		
 		 if (lockResult.isSuccess()) {
 			 if (action == Watcher.Action.ADDED) {
@@ -56,12 +57,23 @@ public abstract class AbstractWatcher<T> implements Watcher<T> {
 				}
 		 }
 		 
-		 DistributedLock.getInstance(client).unLock(LOCK, lockResult);
+		 DistributedLock.getInstance(client).unLock(getLockName(), lockResult);
 	}
 
 	public void onClose(KubernetesClientException cause) {
 		m_logger.log(Level.SEVERE, cause.toString());
 	}
+	
+	/**
+	 * @return  lockname
+	 */
+	public abstract String getLockName();
+	
+	/*****************************************************
+	 * 
+	 *   Resource lifecycle
+	 * 
+	 ******************************************************/
 	
 	/**
 	 * @param resource resource
@@ -77,6 +89,13 @@ public abstract class AbstractWatcher<T> implements Watcher<T> {
 	 * @param resource resource
 	 */
 	public abstract void removeResource(T resource);
+	
+	
+	/*****************************************************
+	 * 
+	 *   Resource register and discover
+	 * 
+	 ******************************************************/
 	
 	/**
 	 * @return ResourceKindClass

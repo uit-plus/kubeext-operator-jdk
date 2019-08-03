@@ -19,15 +19,15 @@ import io.fabric8.kubernetes.internal.KubernetesDeserializer;
 
 /**
  * @author wuheng@otcaix.iscas.ac.cn
- * @since Wed July 11 17:26:22 CST 2019
+ * @since Wed July 26 17:26:22 CST 2019
  * 
  **/
-public class KubesysController {
+public class KubeextController {
 	
 	/**
 	 * logger
 	 */
-	protected final static Logger m_logger = Logger.getLogger(KubesysController.class.getName());
+	protected final static Logger m_logger = Logger.getLogger(KubeextController.class.getName());
 
 	/**
 	 * namespace
@@ -53,14 +53,14 @@ public class KubesysController {
 	 * init client
 	 * @throws Exception 
 	 */
-	public KubesysController() throws Exception {
+	public KubeextController() throws Exception {
 		this.client = ClientUtils.getKubeClient(new File(TOKEN));
 	}
 	
 	/**
 	 * @param client
 	 */
-	public KubesysController(KubernetesClient client) {
+	public KubeextController(KubernetesClient client) {
 		this.client = client;
 	}
 
