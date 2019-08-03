@@ -1,7 +1,7 @@
 /**
  * Copyright (2019, ) Institute of Software, Chinese Academy of Sciences
  */
-package com.github.kubesys.operator.ha;
+package com.github.kubeext.operator.ha;
 
 import java.util.concurrent.ScheduledExecutorService;
 

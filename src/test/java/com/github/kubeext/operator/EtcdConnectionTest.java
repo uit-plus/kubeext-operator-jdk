@@ -1,14 +1,14 @@
 /**
  * Copyright (2019, ) Institute of Software, Chinese Academy of Sciences
  */
-package com.github.kubesys.operator;
+package com.github.kubeext.operator;
 
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.github.kubesys.operator.utils.ClientUtils;
+import com.github.kubeext.operator.utils.ClientUtils;
 
 import io.etcd.jetcd.ByteSequence;
 import io.etcd.jetcd.Client;

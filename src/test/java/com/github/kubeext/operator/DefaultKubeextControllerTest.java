@@ -1,7 +1,9 @@
 /**
  * Copyright (2019, ) Institute of Software, Chinese Academy of Sciences
  */
-package com.github.kubesys.operator;
+package com.github.kubeext.operator;
+
+import com.github.kubeext.operator.AbstractKubeextController;
 
 /**
  * @author wuheng@otcaix.iscas.ac.cn

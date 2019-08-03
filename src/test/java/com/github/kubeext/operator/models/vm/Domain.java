@@ -1,7 +1,7 @@
 /**
  * Copyright (2019, ) Institute of Software, Chinese Academy of Sciences
  */
-package com.github.kubesys.operator.models.vm;
+package com.github.kubeext.operator.models.vm;
 
 import java.util.ArrayList;
 

@@ -1,7 +1,7 @@
 /**
  * Copyright (2019, ) Institute of Software, Chinese Academy of Sciences
  */
-package com.github.kubesys.operator.utils;
+package com.github.kubeext.operator.utils;
 
 import java.io.File;
 import java.io.FileInputStream;

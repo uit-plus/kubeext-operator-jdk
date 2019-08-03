@@ -1,12 +1,12 @@
 /**
  * Copyright (2019, ) Institute of Software, Chinese Academy of Sciences
  */
-package com.github.kubesys.operator.models;
+package com.github.kubeext.operator.models;
 
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.github.kubesys.operator.models.vm.Domain;
-import com.github.kubesys.operator.models.vm.Lifecycle;
+import com.github.kubeext.operator.models.vm.Domain;
+import com.github.kubeext.operator.models.vm.Lifecycle;
 
 import io.fabric8.kubernetes.api.model.KubernetesResource;
 import io.fabric8.kubernetes.api.model.Status;

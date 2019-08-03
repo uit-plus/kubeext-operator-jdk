@@ -9,4 +9,4 @@ data:
     VERSION=v1alpha3
     PLURAL=virtualmachines
     KIND=VirtualMachine
-    PACKAGE=com.github.kubesys.operator.models
+    PACKAGE=com.github.kubeext.operator.models

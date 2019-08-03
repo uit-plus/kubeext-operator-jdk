@@ -1,7 +1,7 @@
 /**
  * Copyright (2019, ) Institute of Software, Chinese Academy of Sciences
  */
-package com.github.kubesys.operator.ha;
+package com.github.kubeext.operator.ha;
 
 import java.net.InetAddress;
 import java.util.concurrent.ExecutionException;

@@ -1,11 +1,11 @@
 /**
  * Copyright (2019, ) Institute of Software, Chinese Academy of Sciences
  */
-package com.github.kubesys.operator.utils;
+package com.github.kubeext.operator.utils;
 
 import java.util.Map;
 
-import com.github.kubesys.operator.AbstractKubeextWatcher;
+import com.github.kubeext.operator.AbstractKubeextWatcher;
 
 import io.fabric8.kubernetes.api.model.Doneable;
 import io.fabric8.kubernetes.api.model.HasMetadata;

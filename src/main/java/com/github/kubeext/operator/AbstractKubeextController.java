@@ -1,7 +1,7 @@
 /**
  * Copyright (2019, ) Institute of Software, Chinese Academy of Sciences
  */
-package com.github.kubesys.operator;
+package com.github.kubeext.operator;
 
 import java.io.File;
 import java.util.HashMap;
@@ -9,8 +9,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.github.kubesys.operator.utils.ClassUtils;
-import com.github.kubesys.operator.utils.ClientUtils;
+import com.github.kubeext.operator.utils.ClassUtils;
+import com.github.kubeext.operator.utils.ClientUtils;
 
 import io.fabric8.kubernetes.api.model.KubernetesResource;
 import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinition;

@@ -1,11 +1,11 @@
 /**
  * Copyright (2019, ) Institute of Software, Chinese Academy of Sciences
  */
-package com.github.kubesys.operator.models;
+package com.github.kubeext.operator.models;
 
-import com.github.kubesys.operator.AbstractKubeextWatcher;
-import com.github.kubesys.operator.ha.AbstractLock;
-import com.github.kubesys.operator.ha.LocalLock;
+import com.github.kubeext.operator.AbstractKubeextWatcher;
+import com.github.kubeext.operator.ha.AbstractLock;
+import com.github.kubeext.operator.ha.LocalLock;
 
 /**
  * @author wuheng@otcaix.iscas.ac.cn

@@ -1,13 +1,13 @@
 /**
  * Copyright (2019, ) Institute of Software, Chinese Academy of Sciences
  */
-package com.github.kubesys.operator;
+package com.github.kubeext.operator;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.github.kubesys.operator.ha.AbstractLock;
-import com.github.kubesys.operator.ha.AbstractLock.LockResult;
+import com.github.kubeext.operator.ha.AbstractLock;
+import com.github.kubeext.operator.ha.AbstractLock.LockResult;
 
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.kubernetes.client.Watcher;
