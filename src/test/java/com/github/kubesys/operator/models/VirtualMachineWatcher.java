@@ -4,9 +4,8 @@
 package com.github.kubesys.operator.models;
 
 import com.github.kubesys.operator.AbstractKubeextWatcher;
-
-import io.etcd.jetcd.Client;
-
+import com.github.kubesys.operator.ha.AbstractLock;
+import com.github.kubesys.operator.ha.LocalLock;
 
 /**
  * @author wuheng@otcaix.iscas.ac.cn
@@ -17,31 +16,30 @@ import io.etcd.jetcd.Client;
  **/
 public class VirtualMachineWatcher extends AbstractKubeextWatcher<VirtualMachine> {
 
-	public VirtualMachineWatcher(Client client) {
-		super(client);
-		// TODO Auto-generated constructor stub
-	}
-
 	@Override
 	public String getLockName() {
-		return null;
+		return "test";
 	}
 
 	@Override
 	public void createResource(VirtualMachine resource) {
-		// TODO Auto-generated method stub
+		System.out.println(resource);
 		
 	}
 
 	@Override
 	public void updateResource(VirtualMachine resource) {
-		// TODO Auto-generated method stub
-		
+		System.out.println(resource);
 	}
 
 	@Override
 	public void removeResource(VirtualMachine resource) {
-		
+		System.out.println(resource);
+	}
+
+	@Override
+	protected AbstractLock getLock() {
+		return LocalLock.getInstance();
 	}
 
 }

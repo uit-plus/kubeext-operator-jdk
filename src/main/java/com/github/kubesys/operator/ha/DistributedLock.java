@@ -21,7 +21,7 @@ import io.etcd.jetcd.Lease;
  * 
  * This code is from Internet
  **/
-public class DistributedLock {
+public class DistributedLock extends AbstractLock {
 	
 	/**
 	 * logger
@@ -184,45 +184,6 @@ public class DistributedLock {
 			// 续约一次
 			leaseClient.keepAliveOnce(leaseId);
 		}
-	}
-
-	/**
-	 * 该class用于描述加锁的结果，同时携带解锁操作所需参数
-	 * 
-	 */
-	public static class LockResult {
-		private boolean success;
-		private long leaseId;
-		private ScheduledExecutorService service;
-
-		LockResult() {
-			super();
-		}
-
-		public boolean isSuccess() {
-			return success;
-		}
-
-		public void setSuccess(boolean success) {
-			this.success = success;
-		}
-
-		public long getLeaseId() {
-			return leaseId;
-		}
-
-		public void setLeaseId(long leaseId) {
-			this.leaseId = leaseId;
-		}
-
-		public ScheduledExecutorService getService() {
-			return service;
-		}
-
-		public void setService(ScheduledExecutorService service) {
-			this.service = service;
-		}
-
 	}
 
 }

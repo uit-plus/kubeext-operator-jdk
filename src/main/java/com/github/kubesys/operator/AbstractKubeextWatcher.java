@@ -6,10 +6,9 @@ package com.github.kubesys.operator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.github.kubesys.operator.ha.DistributedLock;
-import com.github.kubesys.operator.ha.DistributedLock.LockResult;
+import com.github.kubesys.operator.ha.AbstractLock;
+import com.github.kubesys.operator.ha.AbstractLock.LockResult;
 
-import io.etcd.jetcd.Client;
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.kubernetes.client.Watcher;
 
@@ -28,20 +27,17 @@ public abstract class AbstractKubeextWatcher<T> implements Watcher<T> {
 	/**
 	 * client
 	 */
-	protected Client client;
+	protected final AbstractLock lock;
 	
+
 	public AbstractKubeextWatcher() {
 		super();
-	}
-	
-	public AbstractKubeextWatcher(Client client) {
-		super();
-		this.client = client;
+		this.lock = getLock();
 	}
 
 	public void eventReceived(Action action, T resource) {
 
-		LockResult lockResult = DistributedLock.getInstance(client).lock(getLockName(), 30);
+		LockResult lockResult = lock.lock(getLockName(), 30);
 		
 		 if (lockResult.isSuccess()) {
 			 if (action == Watcher.Action.ADDED) {
@@ -58,7 +54,7 @@ public abstract class AbstractKubeextWatcher<T> implements Watcher<T> {
 				}
 		 }
 		 
-		 DistributedLock.getInstance(client).unLock(getLockName(), lockResult);
+		 lock.unLock(getLockName(), lockResult);
 	}
 
 	public void onClose(KubernetesClientException cause) {
@@ -90,5 +86,10 @@ public abstract class AbstractKubeextWatcher<T> implements Watcher<T> {
 	 * @param resource resource
 	 */
 	public abstract void removeResource(T resource);
+	
+	/**
+	 * @return  lock
+	 */
+	protected abstract AbstractLock getLock();
 	
 }

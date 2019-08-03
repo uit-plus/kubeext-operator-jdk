@@ -98,6 +98,11 @@ public abstract class AbstractKubeextController {
 	}
 
 
+	/**
+	 * @param watcher           watcher
+	 * @param props             props
+	 * @throws Exception        exception
+	 */
 	@SuppressWarnings({ "rawtypes", "unchecked", "deprecation" })
 	protected void doListener(AbstractKubeextWatcher watcher, Map<String, String> props) throws Exception {
 		CustomResourceDefinition crd = client
@@ -112,6 +117,12 @@ public abstract class AbstractKubeextController {
 	}
 
 
+	/**
+	 * @param kind           kind
+	 * @param version        version
+	 * @param clazz          class
+	 * @throws Exception     exception
+	 */
 	@SuppressWarnings({ "rawtypes", "unchecked", })
 	protected void doRegister(String kind, String version, Class<?> clazz) throws Exception {
 		KubernetesDeserializer.registerCustomKind(version, kind, 
