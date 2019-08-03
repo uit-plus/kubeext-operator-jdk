@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.github.kubesys.operator.utils.ClassUtils;
 import com.github.kubesys.operator.utils.ClientUtils;
 
 import io.fabric8.kubernetes.api.model.KubernetesResource;
@@ -22,28 +23,13 @@ import io.fabric8.kubernetes.internal.KubernetesDeserializer;
  * @since Wed July 26 17:26:22 CST 2019
  * 
  **/
-public class KubeextController {
+public abstract class AbstractKubeextController {
 	
 	/**
 	 * logger
 	 */
-	protected final static Logger m_logger = Logger.getLogger(KubeextController.class.getName());
+	public final static Logger m_logger = Logger.getLogger(AbstractKubeextController.class.getName());
 
-	/**
-	 * namespace
-	 */
-	protected final String NAMESPACE  = "kube-system";
-	
-	/**
-	 * configuration name
-	 */
-	protected final String CONFIGNAME = "kubesys-config";
-
-	/**
-	 * token
-	 */
-	public final static String TOKEN   = "/etc/kubernetes/admin.conf";
-	
 	/**
 	 * Kubernetes client
 	 */
@@ -53,25 +39,23 @@ public class KubeextController {
 	 * init client
 	 * @throws Exception 
 	 */
-	public KubeextController() throws Exception {
-		this.client = ClientUtils.getKubeClient(new File(TOKEN));
+	public AbstractKubeextController() throws Exception {
+		this.client = ClientUtils.getKubeClient(
+						new File(getTokenFile()));
 	}
 	
-	/**
-	 * @param client
-	 */
-	public KubeextController(KubernetesClient client) {
-		this.client = client;
-	}
-
 	/**
 	 * Start controller
 	 * 
 	 */
 	protected void start() {
 		try {
+			
 			Map<String, String> data = client.configMaps()
-				.inNamespace(NAMESPACE).withName(CONFIGNAME).get().getData();
+								.inNamespace(getNamespace())
+								.withName(getConfigmap())
+								.get().getData();
+			
 			// load properties
 			for (String key : data.keySet()) {
 				Map<String, String> props = new HashMap<String, String>();
@@ -88,7 +72,7 @@ public class KubeextController {
 		} catch (Exception ex) {
 			m_logger.log(Level.SEVERE, "Start controller failed! "
 					+ "Wrong ConfigMap format or configuration,"
-					+ "please see the ConfigMap kubesys-config");
+					+ "please see the ConfigMap " + getConfigmap());
 		}
 	}
 
@@ -100,32 +84,33 @@ public class KubeextController {
 	@SuppressWarnings("rawtypes")
 	protected void doStart(Map<String, String> props) {
 		try {
-			AbstractWatcher watcher = (AbstractWatcher) 
-					Class.forName(props.get("CLASS")).newInstance();
-			doRegister(props.get("KIND"), props.get("GROUP") 
-					+ "/" + props.get("VERSION"), watcher.getResourceKindClass());
-			doListener(watcher, props.get("PLURAL") + "." + props.get("GROUP"));
+			AbstractKubeextWatcher watcher = ClassUtils.getWatcher(props);
+			doRegister(props.get("KIND"), getKindVersion(props), 
+					ClassUtils.getResourceKindClass(props));
+			doListener(watcher, props);
 			m_logger.log(Level.INFO, "Start Watcher<" 
 					+ props.get("KIND") + "> successfull.");
 		} catch (Exception ex) {
 			m_logger.log(Level.SEVERE, "Start Watcher<" 
 						+ props.get("KIND") +"> failed! Unable to load classes, "
-								+ "please see the ConfigMap kubesys-config");
+								+ "please check the ConfigMap " + getConfigmap());
 		}
 	}
 
+
 	@SuppressWarnings({ "rawtypes", "unchecked", "deprecation" })
-	protected void doListener(AbstractWatcher watcher, String name) throws Exception {
+	protected void doListener(AbstractKubeextWatcher watcher, Map<String, String> props) throws Exception {
 		CustomResourceDefinition crd = client
 						.customResourceDefinitions()
-						.withName(name).get();
+						.withName(getKindName(props)).get();
 		MixedOperation listener = (MixedOperation) client.customResource(crd, 
-								watcher.getResourceKindClass(), 
-								watcher.getResourceListClass(), 
-								watcher.getDoneableResourceClass())
+				ClassUtils.getResourceKindClass(props), 
+				ClassUtils.getResourceListClass(props),
+				ClassUtils.getDoneableResourceClass(props))
 						.inAnyNamespace();
 		listener.watch(watcher);
 	}
+
 
 	@SuppressWarnings({ "rawtypes", "unchecked", })
 	protected void doRegister(String kind, String version, Class<?> clazz) throws Exception {
@@ -133,4 +118,40 @@ public class KubeextController {
 				(Class<? extends KubernetesResource>) clazz);
 	}
 
+	/**
+	 * @param props         props
+	 * @return              version
+	 */
+	protected String getKindVersion(Map<String, String> props) {
+		return props.get("GROUP") 
+				+ "/" + props.get("VERSION");
+	}
+	
+	/**
+	 * @param props       props
+	 * @return            name
+	 */
+	protected String getKindName(Map<String, String> props) {
+		return props.get("PLURAL") + "." + props.get("GROUP");
+	}
+	
+	/***************************************
+	 * 
+	 *       Customized methods
+	 * 
+	 ***************************************/
+	/**
+	 * @return namespace
+	 */
+	public abstract String getNamespace();
+	
+	/**
+	 * @return configmap
+	 */
+	public abstract String getConfigmap();
+	
+	/**
+	 * @return token
+	 */
+	public abstract String getTokenFile();
 }

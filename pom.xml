@@ -5,7 +5,7 @@
 
 	<groupId>com.github.kubesys</groupId>
 	<artifactId>operator-jdk</artifactId>
-	<version>0.2</version>
+	<version>1.0.0</version>
 	<packaging>jar</packaging>
 
 	<name>operator-jdk</name>
@@ -42,19 +42,30 @@
 		</dependency>
 
 		<dependency>
-			<groupId>io.netty</groupId>
-			<artifactId>netty-tcnative</artifactId>
-			<version>2.0.25.Final</version>
+			<groupId>org.eclipse.jetty.alpn</groupId>
+			<artifactId>alpn-api</artifactId>
+			<version>1.1.3.v20160715</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mortbay.jetty.alpn</groupId>
+			<artifactId>alpn-boot</artifactId>
+			<version>8.1.13.v20181017</version>
+			<scope>test</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>io.netty</groupId>
-			<artifactId>netty-tcnative-boringssl-static</artifactId>
+			<artifactId>netty-tcnative</artifactId>
 			<version>2.0.25.Final</version>
+			<classifier>linux-x86_64</classifier>
+			<scope>runtime</scope>
+			<!-- <classifier>linux-x86_64</classifier> <classifier>windows-x86_64</classifier> -->
 		</dependency>
 
 	</dependencies>
-	
+
 	<build>
 		<plugins>
 			<plugin>
@@ -135,5 +146,5 @@
 			</plugin>
 		</plugins>
 	</build>
-	
+
 </project>

@@ -10,9 +10,6 @@ import com.github.kubesys.operator.ha.DistributedLock;
 import com.github.kubesys.operator.ha.DistributedLock.LockResult;
 
 import io.etcd.jetcd.Client;
-import io.fabric8.kubernetes.api.model.Doneable;
-import io.fabric8.kubernetes.api.model.HasMetadata;
-import io.fabric8.kubernetes.api.model.KubernetesResourceList;
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.kubernetes.client.Watcher;
 
@@ -21,19 +18,23 @@ import io.fabric8.kubernetes.client.Watcher;
  * @since Wed July 28 17:26:22 CST 2019
  * 
  **/
-public abstract class AbstractWatcher<T> implements Watcher<T> {
+public abstract class AbstractKubeextWatcher<T> implements Watcher<T> {
 
 	/**
 	 * logger
 	 */
-	protected final static Logger m_logger = Logger.getLogger(AbstractWatcher.class.getName());
+	protected final static Logger m_logger = Logger.getLogger(AbstractKubeextWatcher.class.getName());
 
 	/**
 	 * client
 	 */
-	protected final Client client;
+	protected Client client;
 	
-	public AbstractWatcher(Client client) {
+	public AbstractKubeextWatcher() {
+		super();
+	}
+	
+	public AbstractKubeextWatcher(Client client) {
 		super();
 		this.client = client;
 	}
@@ -89,29 +90,5 @@ public abstract class AbstractWatcher<T> implements Watcher<T> {
 	 * @param resource resource
 	 */
 	public abstract void removeResource(T resource);
-	
-	
-	/*****************************************************
-	 * 
-	 *   Resource register and discover
-	 * 
-	 ******************************************************/
-	
-	/**
-	 * @return ResourceKindClass
-	 */
-	public abstract Class<? extends HasMetadata> getResourceKindClass();
-	
-	/**
-	 * @return ResourceListClass
-	 */
-	@SuppressWarnings("rawtypes")
-	public abstract Class<? extends KubernetesResourceList> getResourceListClass();
-	
-	/**
-	 * @return DoneableResourceClass
-	 */
-	@SuppressWarnings("rawtypes")
-	public abstract Class<? extends Doneable> getDoneableResourceClass();
 	
 }

@@ -10,8 +10,8 @@ import java.util.Collection;
 
 import com.github.kubesys.operator.utils.ClientUtils;
 
-import io.etcd.jetcd.ByteSequence;
-import io.etcd.jetcd.Client;
+import io.fabric8.kubernetes.client.KubernetesClient;
+
 /**
  * @author wuheng@otcaix.iscas.ac.cn
  * @since Wed July 20 17:26:22 CST 2019 openssl pkcs8 -topk8 -inform PEM -in
@@ -20,19 +20,15 @@ import io.etcd.jetcd.Client;
  * 
  * yum install openssl *apr*
  **/
-public class EtcdConnectionTest {
+public class KubeConnectionTest {
 
 	
 	public static void main(String[] args) throws Exception {
 
-		Collection<URI> urls = new ArrayList<URI>();
-		urls.add(new URI("https://10.25.0.145:2379"));
-		
-		Client etcdcli = ClientUtils.getEtcdClient(urls, new File("conf/ca.crt")
-								, new File("conf/server.crt"), new File("conf/server.key"));
-		ByteSequence key = ByteSequence.from("v1".getBytes());
-		ByteSequence value = ByteSequence.from("v1".getBytes());
-		System.out.println(etcdcli.getKVClient().put(key, value).get());
+		KubernetesClient client = ClientUtils.getKubeClient(
+				new File("conf/admin.conf"));
+		System.out.println(client.configMaps().inNamespace("kube-system")
+				.withName("kubeext-config").get().getData());
 	}
 
 }
