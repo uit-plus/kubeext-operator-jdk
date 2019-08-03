@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kubeext-config
+  namespace: kube-system
+data:
+  VirtualMachine: |
+    GROUP=cloudplus.io
+    VERSION=v1alpha3
+    PLURAL=virtualmachines
+    KIND=VirtualMachine
+    PACKAGE=com.github.kubesys.operator.models
