@@ -7,8 +7,6 @@ import java.net.InetAddress;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import io.etcd.jetcd.Client;
-
 /**
  * @author wuheng@otcaix.iscas.ac.cn
  * @since Wed Aug 3 17:26:22 CST 2019

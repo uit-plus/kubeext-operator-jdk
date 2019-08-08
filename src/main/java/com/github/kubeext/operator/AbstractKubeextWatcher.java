@@ -30,11 +30,10 @@ public abstract class AbstractKubeextWatcher<T> implements Watcher<T> {
 	protected final AbstractLock lock;
 	
 
-	public AbstractKubeextWatcher() {
-		super();
-		this.lock = getLock();
+	public AbstractKubeextWatcher(AbstractLock lock) throws Exception {
+		this.lock = lock;
 	}
-
+	
 	public void eventReceived(Action action, T resource) {
 
 		LockResult lockResult = lock.lock(getLockName(), 30);
@@ -61,16 +60,17 @@ public abstract class AbstractKubeextWatcher<T> implements Watcher<T> {
 		m_logger.log(Level.SEVERE, cause.toString());
 	}
 	
-	/**
-	 * @return  lockname
-	 */
-	public abstract String getLockName();
 	
 	/*****************************************************
 	 * 
 	 *   Resource lifecycle
 	 * 
 	 ******************************************************/
+	
+	/**
+	 * @return lock name
+	 */
+	public abstract String getLockName();
 	
 	/**
 	 * @param resource resource
@@ -86,10 +86,5 @@ public abstract class AbstractKubeextWatcher<T> implements Watcher<T> {
 	 * @param resource resource
 	 */
 	public abstract void removeResource(T resource);
-	
-	/**
-	 * @return  lock
-	 */
-	protected abstract AbstractLock getLock();
 	
 }

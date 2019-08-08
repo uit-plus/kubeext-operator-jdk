@@ -16,6 +16,11 @@ import com.github.kubeext.operator.ha.LocalLock;
  **/
 public class VirtualMachineWatcher extends AbstractKubeextWatcher<VirtualMachine> {
 
+	public VirtualMachineWatcher(AbstractLock lock) throws Exception {
+		super(lock);
+		// TODO Auto-generated constructor stub
+	}
+
 	@Override
 	public String getLockName() {
 		return "test";
@@ -35,11 +40,6 @@ public class VirtualMachineWatcher extends AbstractKubeextWatcher<VirtualMachine
 	@Override
 	public void removeResource(VirtualMachine resource) {
 		System.out.println(resource);
-	}
-
-	@Override
-	protected AbstractLock getLock() {
-		return LocalLock.getInstance();
 	}
 
 }
